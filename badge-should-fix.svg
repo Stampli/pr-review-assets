@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="82" height="20" viewBox="0 0 82 20" role="img" aria-label="Should fix" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace">
+<title>Should fix</title>
+<desc>Severity badge reading SHOULD FIX, drawn as a dark pill with a #fc9867 border.</desc>
+<style>
+.b { stroke-dasharray: 196; stroke-dashoffset: 0; animation: draw 0.5s ease-out 0s 1 both; }
+.t { opacity: 1; animation: fade 0.3s ease-out 0.3s 1 both; }
+@keyframes draw { from { stroke-dashoffset: 196; } }
+@keyframes fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .b, .t { animation: none; } }
+</style>
+<rect x="0.5" y="0.5" width="81" height="19" rx="6" fill="#0d1017"/>
+<rect class="b" x="0.5" y="0.5" width="81" height="19" rx="6" fill="none" stroke="#fc9867" stroke-width="1"/>
+<text class="t" x="41" y="14" fill="#fc9867" font-size="11" font-weight="700" letter-spacing="0.5" text-anchor="middle">SHOULD FIX</text>
+</svg>

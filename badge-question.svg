@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="69" height="20" viewBox="0 0 69 20" role="img" aria-label="Question" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace">
+<title>Question</title>
+<desc>Severity badge reading QUESTION, drawn as a dark pill with a #78dce8 border.</desc>
+<style>
+.b { stroke-dasharray: 170; stroke-dashoffset: 0; animation: draw 0.5s ease-out 0s 1 both; }
+.t { opacity: 1; animation: fade 0.3s ease-out 0.3s 1 both; }
+@keyframes draw { from { stroke-dashoffset: 170; } }
+@keyframes fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .b, .t { animation: none; } }
+</style>
+<rect x="0.5" y="0.5" width="68" height="19" rx="6" fill="#0d1017"/>
+<rect class="b" x="0.5" y="0.5" width="68" height="19" rx="6" fill="none" stroke="#78dce8" stroke-width="1"/>
+<text class="t" x="34" y="14" fill="#78dce8" font-size="11" font-weight="700" letter-spacing="0.5" text-anchor="middle">QUESTION</text>
+</svg>

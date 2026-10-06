@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="62" height="20" viewBox="0 0 62 20" role="img" aria-label="Blocker" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace">
+<title>Blocker</title>
+<desc>Severity badge reading BLOCKER, drawn as a dark pill with a #ff6188 border.</desc>
+<style>
+.b { stroke-dasharray: 156; stroke-dashoffset: 0; animation: draw 0.5s ease-out 0s 1 both; }
+.t { opacity: 1; animation: fade 0.3s ease-out 0.3s 1 both; }
+@keyframes draw { from { stroke-dashoffset: 156; } }
+@keyframes fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .b, .t { animation: none; } }
+</style>
+<rect x="0.5" y="0.5" width="61" height="19" rx="6" fill="#0d1017"/>
+<rect class="b" x="0.5" y="0.5" width="61" height="19" rx="6" fill="none" stroke="#ff6188" stroke-width="1"/>
+<text class="t" x="31" y="14" fill="#ff6188" font-size="11" font-weight="700" letter-spacing="0.5" text-anchor="middle">BLOCKER</text>
+</svg>
