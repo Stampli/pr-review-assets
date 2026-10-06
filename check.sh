@@ -18,6 +18,7 @@ for f in *.svg; do
   grep -q '<script' "$f"     && fail "script"
   grep -Eq 'href=["'"'"']?(https?:)?//' "$f" && fail "external href"
   grep -Eq 'url\(["'"'"']?(https?:)?//' "$f" && fail "external url()"
+  grep -Eiq '&#(58|x3a);' "$f" && fail "XML-encoded URL separator"
   grep -q '@import' "$f"     && fail "@import"
   grep -q 'repeatCount="indefinite"' "$f" && fail "SMIL loop"
   grep -q 'infinite' "$f"    && fail "CSS loop"
