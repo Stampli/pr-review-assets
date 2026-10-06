@@ -27,11 +27,12 @@ banner() {
 </defs>
 <style>
 .frame { stroke-dasharray: 1900; stroke-dashoffset: 0; animation: draw 1.2s ease-out 0s 1 both; }
-.glyph { stroke-dasharray: 80; stroke-dashoffset: 0; animation: draw 0.6s ease-out 0.8s 1 both; }
+.glyph { stroke-dasharray: 80; stroke-dashoffset: 0; animation: draw-glyph 0.6s ease-out 0.8s 1 both; }
 .label { opacity: 1; transform: translateY(0); animation: rise 0.6s ease-out 0.9s 1 both; }
 .sub { opacity: 1; animation: fade 0.5s ease-out 1.5s 1 both; }
 .shine { transform: translateX(0); animation: sweep 1s ease-in-out 1.4s 1 both; }
 @keyframes draw { from { stroke-dashoffset: 1900; } }
+@keyframes draw-glyph { from { stroke-dashoffset: 80; } }
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } }
 @keyframes fade { from { opacity: 0; } }
 @keyframes sweep { from { transform: translateX(-880px); } }
