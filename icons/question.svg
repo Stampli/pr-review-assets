@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" role="img" fill="none" stroke="#78dce8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<title>Question</title>
+<style>
+path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-out 1 both; }
+@keyframes draw { from { stroke-dashoffset: 1.1; } }
+@media (prefers-reduced-motion: reduce) { path { animation: none; } }
+</style>
+<path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" pathLength="1" style="animation-delay:0s"/>
+<path d="M12 16v.01" pathLength="1" style="animation-delay:0.08s"/>
+<path d="M12 13a2 2 0 0 0 .914 -3.782a1.98 1.98 0 0 0 -2.414 .483" pathLength="1" style="animation-delay:0.16s"/>
+</svg>

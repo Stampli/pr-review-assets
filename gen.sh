@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Generates every SVG in this repo. Edit this file, run it, commit the output.
 # Banners are 880x72, badges 20 px tall. One dark panel serves both GitHub themes.
+# Icons are 18 px Tabler outlines (vendor/, fetched by vendor/fetch.sh) on a transparent ground.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -8,6 +9,7 @@ FONT="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospac
 PANEL="#0d1017"
 FRAME="#282d35"
 MUTED="#8b949e"
+TABLER="vendor/tabler-3.49.0"
 
 # banner <file> <hue> <label> <sub> <glyph-path> <title> <desc>
 # Final frame is the base style; keyframes animate FROM the start state, once.
@@ -73,6 +75,32 @@ badge() {
 SVG
 }
 
+# icon <file> <tabler-name> <hue> <title>
+# Keeps every Tabler <path d> except the invisible box path. pathLength="1" makes every path
+# length 1, so one overshot dash (1 on, 1.2 off, from offset 1.1) hides it with no round-cap dot.
+# Paths start 0.08 s apart, capped so the last one starts by 0.7 s.
+icon() {
+  local file="icons/$1.svg" src="${TABLER}/$2.svg" hue="$3" title="$4"
+  local paths
+  paths=$(grep -o '<path [^>]*d="[^"]*"' "$src" \
+    | sed 's/.* d="\([^"]*\)"$/\1/' \
+    | grep -vx 'M0 0h24v24H0z' \
+    | awk '{ t = (NR - 1) * 0.08; if (t > 0.7) t = 0.7
+             printf "<path d=\"%s\" pathLength=\"1\" style=\"animation-delay:%gs\"/>\n", $0, t }')
+  mkdir -p icons
+  cat > "$file" <<SVG
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" role="img" fill="none" stroke="${hue}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<title>${title}</title>
+<style>
+path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-out 1 both; }
+@keyframes draw { from { stroke-dashoffset: 1.1; } }
+@media (prefers-reduced-motion: reduce) { path { animation: none; } }
+</style>
+${paths}
+</svg>
+SVG
+}
+
 CHECK="M30 36 L37 43 L51 29"
 BAR="M40 26 L40 40 M40 46 L40 47"
 CROSS="M33 29 L47 43 M47 29 L33 43"
@@ -87,4 +115,15 @@ badge badge-suggestion.svg   "#ffd866" "SUGGESTION"   82 "Suggestion"
 badge badge-question.svg     "#78dce8" "QUESTION"     69 "Question"
 badge badge-pre-existing.svg "#ab9df2" "PRE-EXISTING" 96 "Pre-existing"
 
-echo "generated $(ls *.svg | wc -l | tr -d ' ') files"
+icon blocker      circle-x       "#ff6188" "Blocker"
+icon should-fix   alert-triangle "#fc9867" "Should fix"
+icon suggestion   bulb           "#ffd866" "Suggestion"
+icon question     help-circle    "#78dce8" "Question"
+icon pre-existing history        "#ab9df2" "Pre-existing"
+icon resolved     circle-check   "#a9dc76" "Resolved"
+icon still-open   hourglass      "#fc9867" "Still open"
+icon source       paperclip      "#939293" "Source"
+icon checked      list-check     "#939293" "Checked"
+icon bot          robot          "#939293" "Bot"
+
+echo "generated $(ls *.svg icons/*.svg | wc -l | tr -d ' ') files"
