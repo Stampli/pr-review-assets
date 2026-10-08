@@ -28,6 +28,7 @@ Outline icons from [Tabler Icons](https://tabler.io/icons) v3.49.0, MIT licence,
 | 📎 | `icons/source.svg` | `paperclip` | `#939293` |
 | 📚 | `icons/checked.svg` | `list-check` | `#939293` |
 | 🤖 | `icons/bot.svg` | `robot` | `#939293` |
+| 🧭 | `icons/blast-radius.svg` | `compass` | `#939293` |
 
 ## Editing
 

@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 VERSION=$(tr -d '[:space:]' < vendor/VERSION)
 BASE="https://cdn.jsdelivr.net/npm/@tabler/icons@${VERSION}"
 DEST="vendor/tabler-${VERSION}"
-NAMES="circle-x alert-triangle bulb help-circle history circle-check hourglass paperclip list-check robot"
+NAMES="circle-x alert-triangle bulb help-circle history circle-check hourglass paperclip list-check robot compass"
 
 # get <url> <file>: write only on success, so a failed run leaves no partial file behind.
 get() {

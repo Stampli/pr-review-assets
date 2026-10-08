@@ -131,5 +131,6 @@ icon still-open   hourglass      "#fc9867" "Still open"
 icon source       paperclip      "#939293" "Source"
 icon checked      list-check     "#939293" "Checked"
 icon bot          robot          "#939293" "Bot"
+icon blast-radius compass        "#939293" "Blast radius"
 
 echo "generated $(ls *.svg icons/*.svg | wc -l | tr -d ' ') files"
