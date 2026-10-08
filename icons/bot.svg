@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" role="img" fill="none" stroke="#868e96" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<title>Bot</title>
+<style>
+path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-out 1 both; }
+@keyframes draw { from { stroke-dashoffset: 1.1; } }
+@media (prefers-reduced-motion: reduce) { path { animation: none; } }
+</style>
+<path d="M6 6a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2l0 -4" pathLength="1" style="animation-delay:0s"/>
+<path d="M12 2v2" pathLength="1" style="animation-delay:0.08s"/>
+<path d="M9 12v9" pathLength="1" style="animation-delay:0.16s"/>
+<path d="M15 12v9" pathLength="1" style="animation-delay:0.24s"/>
+<path d="M5 16l4 -2" pathLength="1" style="animation-delay:0.32s"/>
+<path d="M15 14l4 2" pathLength="1" style="animation-delay:0.4s"/>
+<path d="M9 18h6" pathLength="1" style="animation-delay:0.48s"/>
+<path d="M10 8v.01" pathLength="1" style="animation-delay:0.56s"/>
+<path d="M14 8v.01" pathLength="1" style="animation-delay:0.64s"/>
+</svg>

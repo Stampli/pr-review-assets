@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Generates every SVG in this repo. Edit this file, run it, commit the output.
 # Banners are 880x72, badges 20 px tall. One dark panel serves both GitHub themes.
+# Icons are 18 px Tabler outlines (vendor/, fetched by vendor/fetch.sh) on a transparent ground,
+# so their hues hold 3:1 on both GitHub grounds, #ffffff and #0d1117; check.sh enforces it.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -8,6 +10,7 @@ FONT="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospac
 PANEL="#0d1017"
 FRAME="#282d35"
 MUTED="#8b949e"
+TABLER="vendor/tabler-$(tr -d '[:space:]' < vendor/VERSION)"
 
 # banner <file> <hue> <label> <sub> <glyph-path> <title> <desc>
 # Final frame is the base style; keyframes animate FROM the start state, once.
@@ -73,6 +76,38 @@ badge() {
 SVG
 }
 
+# icon <file> <tabler-name> <hue> <title>
+# Keeps every Tabler <path d> except the invisible box path. pathLength="1" makes every path
+# length 1, so one overshot dash (1 on, 1.2 off, from offset 1.1) hides it with no round-cap dot.
+# Paths start 0.08 s apart; the delay caps at 0.68 s so the last 0.5 s draw ends before 1.2 s.
+# Fails on any non-path shape in the source, which would otherwise vanish silently.
+icon() {
+  local file="icons/$1.svg" src="${TABLER}/$2.svg" hue="$3" title="$4"
+  local shapes='<(circle|ellipse|line|polygon|polyline|rect)[[:space:]/>]'
+  local paths
+  if grep -Eq "$shapes" "$src"; then
+    echo "icon: $src contains $(grep -Eo "$shapes" "$src" | sed -E 's#[[:space:]/>]$#>#' | sort -u | tr '\n' ' ')- gen.sh copies only <path>" >&2
+    exit 1
+  fi
+  paths=$(grep -o '<path [^>]*d="[^"]*"' "$src" \
+    | sed 's/.* d="\([^"]*\)"$/\1/' \
+    | grep -vx 'M0 0h24v24H0z' \
+    | awk '{ t = (NR - 1) * 0.08; if (t > 0.68) t = 0.68
+             printf "<path d=\"%s\" pathLength=\"1\" style=\"animation-delay:%gs\"/>\n", $0, t }')
+  mkdir -p icons
+  cat > "$file" <<SVG
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" role="img" fill="none" stroke="${hue}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<title>${title}</title>
+<style>
+path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-out 1 both; }
+@keyframes draw { from { stroke-dashoffset: 1.1; } }
+@media (prefers-reduced-motion: reduce) { path { animation: none; } }
+</style>
+${paths}
+</svg>
+SVG
+}
+
 CHECK="M30 36 L37 43 L51 29"
 BAR="M40 26 L40 40 M40 46 L40 47"
 CROSS="M33 29 L47 43 M47 29 L33 43"
@@ -87,4 +122,17 @@ badge badge-suggestion.svg   "#ffd866" "SUGGESTION"   82 "Suggestion"
 badge badge-question.svg     "#78dce8" "QUESTION"     69 "Question"
 badge badge-pre-existing.svg "#ab9df2" "PRE-EXISTING" 96 "Pre-existing"
 
-echo "generated $(ls *.svg | wc -l | tr -d ' ') files"
+icon blocker      circle-x            "#e5534b" "Blocker"
+icon should-fix   alert-triangle      "#d9752b" "Should fix"
+icon suggestion   bulb                "#b8860b" "Suggestion"
+icon question     help-circle         "#2a96ab" "Question"
+icon pre-existing history             "#9a6bf0" "Pre-existing"
+icon resolved     circle-check        "#2da44e" "Resolved"
+icon still-open   hourglass           "#d9752b" "Still open"
+icon source       paperclip           "#868e96" "Source"
+icon checked      list-check          "#868e96" "Checked"
+icon bot          robot               "#868e96" "Bot"
+icon blast-radius compass             "#868e96" "Blast radius"
+icon skipped      player-skip-forward "#868e96" "Skipped"
+
+echo "generated $(ls *.svg icons/*.svg | wc -l | tr -d ' ') files"

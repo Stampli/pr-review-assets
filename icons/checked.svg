@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" role="img" fill="none" stroke="#868e96" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<title>Checked</title>
+<style>
+path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-out 1 both; }
+@keyframes draw { from { stroke-dashoffset: 1.1; } }
+@media (prefers-reduced-motion: reduce) { path { animation: none; } }
+</style>
+<path d="M3.5 5.5l1.5 1.5l2.5 -2.5" pathLength="1" style="animation-delay:0s"/>
+<path d="M3.5 11.5l1.5 1.5l2.5 -2.5" pathLength="1" style="animation-delay:0.08s"/>
+<path d="M3.5 17.5l1.5 1.5l2.5 -2.5" pathLength="1" style="animation-delay:0.16s"/>
+<path d="M11 6l9 0" pathLength="1" style="animation-delay:0.24s"/>
+<path d="M11 12l9 0" pathLength="1" style="animation-delay:0.32s"/>
+<path d="M11 18l9 0" pathLength="1" style="animation-delay:0.4s"/>
+</svg>
