@@ -24,7 +24,7 @@ for f in *.svg icons/*.svg; do
       grep -q 'M0 0h24v24H0z' "$f" && fail "Tabler box path"
       # Icons sit on the page, not a panel: every stroke needs WCAG contrast >= 3.0 on both
       # GitHub grounds, light #ffffff and dark #0d1117.
-      strokes=$(grep -Eo '[[:space:]]stroke="[^"]*"' "$f" | cut -d'"' -f2 | sort -u)
+      strokes=$(grep -Eo '[[:space:]]stroke="[^"]*"' "$f" | cut -d'"' -f2 | sort -u || true)
       [ -n "$strokes" ] || fail "no stroke colour"
       for c in $strokes; do
         [[ "$c" =~ ^#[0-9a-fA-F]{6}$ ]] || { fail "stroke $c is not #rrggbb"; continue; }
