@@ -9,7 +9,7 @@ FONT="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospac
 PANEL="#0d1017"
 FRAME="#282d35"
 MUTED="#8b949e"
-TABLER="vendor/tabler-3.49.0"
+TABLER="vendor/tabler-$(tr -d '[:space:]' < vendor/VERSION)"
 
 # banner <file> <hue> <label> <sub> <glyph-path> <title> <desc>
 # Final frame is the base style; keyframes animate FROM the start state, once.
@@ -78,14 +78,20 @@ SVG
 # icon <file> <tabler-name> <hue> <title>
 # Keeps every Tabler <path d> except the invisible box path. pathLength="1" makes every path
 # length 1, so one overshot dash (1 on, 1.2 off, from offset 1.1) hides it with no round-cap dot.
-# Paths start 0.08 s apart, capped so the last one starts by 0.7 s.
+# Paths start 0.08 s apart; the delay caps at 0.68 s so the last 0.5 s draw ends before 1.2 s.
+# Fails on any non-path shape in the source, which would otherwise vanish silently.
 icon() {
   local file="icons/$1.svg" src="${TABLER}/$2.svg" hue="$3" title="$4"
+  local shapes='<(circle|ellipse|line|polygon|polyline|rect)[[:space:]/>]'
   local paths
+  if grep -Eq "$shapes" "$src"; then
+    echo "icon: $src contains $(grep -Eo "$shapes" "$src" | sed -E 's#[[:space:]/>]$#>#' | sort -u | tr '\n' ' ')- gen.sh copies only <path>" >&2
+    exit 1
+  fi
   paths=$(grep -o '<path [^>]*d="[^"]*"' "$src" \
     | sed 's/.* d="\([^"]*\)"$/\1/' \
     | grep -vx 'M0 0h24v24H0z' \
-    | awk '{ t = (NR - 1) * 0.08; if (t > 0.7) t = 0.7
+    | awk '{ t = (NR - 1) * 0.08; if (t > 0.68) t = 0.68
              printf "<path d=\"%s\" pathLength=\"1\" style=\"animation-delay:%gs\"/>\n", $0, t }')
   mkdir -p icons
   cat > "$file" <<SVG

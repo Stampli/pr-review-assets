@@ -22,12 +22,19 @@ for f in *.svg icons/*.svg; do
       [ "$paths" -gt 0 ] || fail "no <path>"
       [ "$drawn" -eq "$paths" ] || fail '<path> without pathLength="1"'
       grep -q 'M0 0h24v24H0z' "$f" && fail "Tabler box path"
+      # One iteration, in the longhand and in every animation shorthand. In a shorthand the
+      # count is the only bare number: times carry a unit, and function arguments are dropped.
       awk '{ s = $0
-             while (match(s, /animation-iteration-count[[:space:]]*:[^;}"]*/)) {
-               v = substr(s, RSTART, RLENGTH); sub(/^[^:]*:/, "", v); gsub(/[[:space:]]/, "", v)
-               if (v != "1") bad = 1
-               s = substr(s, RSTART + RLENGTH) } }
-           END { exit !bad }' "$f" && fail "animation-iteration-count not 1"
+             while (match(s, /animation(-iteration-count)?[[:space:]]*:[^;}"]*/)) {
+               m = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
+               prop = m; sub(/[[:space:]]*:.*/, "", prop)
+               v = m; sub(/^[^:]*:/, "", v)
+               gsub(/[a-zA-Z-]+\([^)]*\)/, " ", v); gsub(/,/, " ", v)
+               n = split(v, tok, /[[:space:]]+/)
+               for (i = 1; i <= n; i++) {
+                 if (tok[i] == "" || tok[i] == "1") continue
+                 if (prop == "animation-iteration-count" || tok[i] ~ /^[+-]?[0-9]*\.?[0-9]+$/) bad = 1 } } }
+           END { exit !bad }' "$f" && fail "animation iteration count not 1"
       ;;
     *)
       grep -q '<desc>' "$f" || fail "missing <desc>"

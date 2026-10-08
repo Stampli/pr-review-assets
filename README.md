@@ -14,7 +14,7 @@ Static SVG banners, badges and icons that the Stampli AI PR reviewer embeds in i
 
 ## Icons
 
-Outline icons from [Tabler Icons](https://tabler.io/icons) v3.49.0, MIT licence, copyright Paweł Kuna; the full notice is in `LICENSE-tabler`. `vendor/fetch.sh` pins the version and fetched the sources into `vendor/tabler-3.49.0/`; `gen.sh` recolours them and adds a one-time draw-in. New version or icon: edit `VERSION`/`NAMES` in `vendor/fetch.sh`, run it, point `TABLER` in `gen.sh` at the new folder, then follow Editing.
+Outline icons from [Tabler Icons](https://tabler.io/icons) v3.49.0, MIT licence, copyright Paweł Kuna; the full notice is in `LICENSE-tabler`. `vendor/VERSION` pins the version for both scripts; `vendor/fetch.sh` fetched the sources into `vendor/tabler-3.49.0/`; `gen.sh` recolours them and adds a one-time draw-in. New version or icon: edit `vendor/VERSION` or `NAMES` in `vendor/fetch.sh`, run `vendor/fetch.sh`, delete the old `vendor/tabler-*` folder, then follow Editing.
 
 | Token | File | Tabler icon | Stroke |
 |---|---|---|---|
@@ -41,4 +41,4 @@ URLs are pinned by commit SHA: `https://raw.githubusercontent.com/Stampli/pr-rev
 
 Well-formed XML, under 20 KB, `role="img"`, `<title>`, `<desc>`, explicit `width`/`height`/`viewBox`, the GitHub monospace font stack, no scripts, no external references, finite animation only, a `prefers-reduced-motion` rule. Base styles are the finished frame so a viewer with motion off, or an email client, sees the final image.
 
-Icons skip the `<desc>` and font-stack rules and add their own: under 2 KB, `pathLength="1"` on every `<path>`, no Tabler `M0 0h24v24H0z` box path, `animation-iteration-count` absent or `1`.
+Icons skip the `<desc>` and font-stack rules and add their own: under 2 KB, `pathLength="1"` on every `<path>`, no Tabler `M0 0h24v24H0z` box path, iteration count absent or `1` in the `animation-iteration-count` longhand and in every `animation` shorthand.

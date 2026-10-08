@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Fetches the Tabler outline icons gen.sh draws from, pinned by version, plus Tabler's LICENSE.
+# Fetches the Tabler outline icons gen.sh draws from, at the version in vendor/VERSION, plus Tabler's LICENSE.
 # Run once per version bump and commit the output; gen.sh never touches the network.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-VERSION="3.49.0"
+VERSION=$(tr -d '[:space:]' < vendor/VERSION)
 BASE="https://cdn.jsdelivr.net/npm/@tabler/icons@${VERSION}"
 DEST="vendor/tabler-${VERSION}"
 NAMES="circle-x alert-triangle bulb help-circle history circle-check hourglass paperclip list-check robot"
