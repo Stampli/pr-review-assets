@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Generates every SVG in this repo. Edit this file, run it, commit the output.
 # Banners are 880x72, badges 20 px tall. One dark panel serves both GitHub themes.
-# Icons are 18 px Tabler outlines (vendor/, fetched by vendor/fetch.sh) on a transparent ground.
+# Icons are 18 px Tabler outlines (vendor/, fetched by vendor/fetch.sh) on a transparent ground,
+# so their hues hold 3:1 on both GitHub grounds, #ffffff and #0d1117; check.sh enforces it.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -121,16 +122,17 @@ badge badge-suggestion.svg   "#ffd866" "SUGGESTION"   82 "Suggestion"
 badge badge-question.svg     "#78dce8" "QUESTION"     69 "Question"
 badge badge-pre-existing.svg "#ab9df2" "PRE-EXISTING" 96 "Pre-existing"
 
-icon blocker      circle-x       "#ff6188" "Blocker"
-icon should-fix   alert-triangle "#fc9867" "Should fix"
-icon suggestion   bulb           "#ffd866" "Suggestion"
-icon question     help-circle    "#78dce8" "Question"
-icon pre-existing history        "#ab9df2" "Pre-existing"
-icon resolved     circle-check   "#a9dc76" "Resolved"
-icon still-open   hourglass      "#fc9867" "Still open"
-icon source       paperclip      "#939293" "Source"
-icon checked      list-check     "#939293" "Checked"
-icon bot          robot          "#939293" "Bot"
-icon blast-radius compass        "#939293" "Blast radius"
+icon blocker      circle-x            "#e5534b" "Blocker"
+icon should-fix   alert-triangle      "#d9752b" "Should fix"
+icon suggestion   bulb                "#b8860b" "Suggestion"
+icon question     help-circle         "#2a96ab" "Question"
+icon pre-existing history             "#9a6bf0" "Pre-existing"
+icon resolved     circle-check        "#2da44e" "Resolved"
+icon still-open   hourglass           "#d9752b" "Still open"
+icon source       paperclip           "#868e96" "Source"
+icon checked      list-check          "#868e96" "Checked"
+icon bot          robot               "#868e96" "Bot"
+icon blast-radius compass             "#868e96" "Blast radius"
+icon skipped      player-skip-forward "#868e96" "Skipped"
 
 echo "generated $(ls *.svg icons/*.svg | wc -l | tr -d ' ') files"

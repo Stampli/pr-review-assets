@@ -22,6 +22,21 @@ for f in *.svg icons/*.svg; do
       [ "$paths" -gt 0 ] || fail "no <path>"
       [ "$drawn" -eq "$paths" ] || fail '<path> without pathLength="1"'
       grep -q 'M0 0h24v24H0z' "$f" && fail "Tabler box path"
+      # Icons sit on the page, not a panel: every stroke needs WCAG contrast >= 3.0 on both
+      # GitHub grounds, light #ffffff and dark #0d1117.
+      strokes=$(grep -Eo '[[:space:]]stroke="[^"]*"' "$f" | cut -d'"' -f2 | sort -u)
+      [ -n "$strokes" ] || fail "no stroke colour"
+      for c in $strokes; do
+        [[ "$c" =~ ^#[0-9a-fA-F]{6}$ ]] || { fail "stroke $c is not #rrggbb"; continue; }
+        low=$(awk -v c="$c" '
+          function hx(s) { return index("0123456789abcdef", substr(s, 1, 1)) * 16 + index("0123456789abcdef", substr(s, 2, 1)) - 17 }
+          function lin(v) { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ^ 2.4 }
+          function lum(h) { h = tolower(substr(h, 2)); return 0.2126 * lin(hx(substr(h, 1, 2))) + 0.7152 * lin(hx(substr(h, 3, 2))) + 0.0722 * lin(hx(substr(h, 5, 2))) }
+          function ratio(a, b) { a = lum(a); b = lum(b); return a > b ? (a + 0.05) / (b + 0.05) : (b + 0.05) / (a + 0.05) }
+          BEGIN { n = split("#ffffff #0d1117", bg, " ")
+                  for (i = 1; i <= n; i++) { r = ratio(c, bg[i]); if (r < 3.0) printf "%.2f on %s ", r, bg[i] } }')
+        [ -z "$low" ] || fail "stroke $c contrast ${low}below 3.0"
+      done
       # One iteration, in the longhand and in every animation shorthand. In a shorthand the
       # count is the only bare number: times carry a unit, and function arguments are dropped.
       awk '{ s = $0
