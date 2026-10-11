@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 rc=0
-for f in *.svg icons/*.svg; do
+for f in *.svg icons/*.svg ticket/*.svg ticket/icons/*.svg; do
   fail() { echo "FAIL $f: $1"; rc=1; }
   [ -e "$f" ] || { fail "glob matched no file"; continue; }
   xmllint --noout "$f" 2>/dev/null || fail "not well-formed XML"
@@ -14,7 +14,7 @@ for f in *.svg icons/*.svg; do
   grep -q ' height="' "$f"   || fail "missing height"
   grep -q ' viewBox="' "$f"  || fail "missing viewBox"
   case "$f" in
-    icons/*)
+    icons/*|ticket/icons/*)
       # Icons: Tabler outline paths, no text, so no <desc> or font stack.
       [ "$(wc -c <"$f")" -lt 2048 ] || fail "icon over 2 KB"
       paths=$(awk '{ n += gsub(/<path/, "") } END { print n + 0 }' "$f")
@@ -23,7 +23,7 @@ for f in *.svg icons/*.svg; do
       [ "$drawn" -eq "$paths" ] || fail '<path> without pathLength="1"'
       grep -q 'M0 0h24v24H0z' "$f" && fail "Tabler box path"
       # Icons sit on the page, not a panel: every stroke needs WCAG contrast >= 3.0 on both
-      # GitHub grounds, light #ffffff and dark #0d1117.
+      # GitHub grounds, light #ffffff and dark #0d1117, and on Jira's dark surface #1d2125.
       strokes=$(grep -Eo '[[:space:]]stroke="[^"]*"' "$f" | cut -d'"' -f2 | sort -u || true)
       [ -n "$strokes" ] || fail "no stroke colour"
       for c in $strokes; do
@@ -33,7 +33,7 @@ for f in *.svg icons/*.svg; do
           function lin(v) { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ^ 2.4 }
           function lum(h) { h = tolower(substr(h, 2)); return 0.2126 * lin(hx(substr(h, 1, 2))) + 0.7152 * lin(hx(substr(h, 3, 2))) + 0.0722 * lin(hx(substr(h, 5, 2))) }
           function ratio(a, b) { a = lum(a); b = lum(b); return a > b ? (a + 0.05) / (b + 0.05) : (b + 0.05) / (a + 0.05) }
-          BEGIN { n = split("#ffffff #0d1117", bg, " ")
+          BEGIN { n = split("#ffffff #0d1117 #1d2125", bg, " ")
                   for (i = 1; i <= n; i++) { r = ratio(c, bg[i]); if (r < 3.0) printf "%.2f on %s ", r, bg[i] } }')
         [ -z "$low" ] || fail "stroke $c contrast ${low}below 3.0"
       done
@@ -65,5 +65,5 @@ for f in *.svg icons/*.svg; do
   grep -q 'infinite' "$f"    && fail "CSS loop"
   grep -q 'prefers-reduced-motion' "$f" || fail "no reduced-motion rule"
 done
-[ "$rc" -eq 0 ] && echo "OK $(ls *.svg icons/*.svg 2>/dev/null | wc -l | tr -d ' ') files"
+[ "$rc" -eq 0 ] && echo "OK $(ls *.svg icons/*.svg ticket/*.svg ticket/icons/*.svg 2>/dev/null | wc -l | tr -d ' ') files"
 exit "$rc"
