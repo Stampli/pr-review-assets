@@ -97,14 +97,15 @@ tabler_paths() {
              printf "<path d=\"%s\" pathLength=\"1\" style=\"animation-delay:%gs\"/>\n", $0, t }'
 }
 
-# icon <file> <tabler-name> <hue> <title>
-icon() {
-  local file="icons/$1.svg" hue="$3" title="$4"
+# icon_svg <file> <tabler-name> <hue> <title> <width> <height> <viewBox>
+# The one icon writer: every icon shares this markup, style and draw-in, so they cannot drift.
+icon_svg() {
+  local file="$1" hue="$3" title="$4" w="$5" h="$6" vb="$7"
   local paths
   paths=$(tabler_paths "$2")
-  mkdir -p icons
+  mkdir -p "$(dirname "$file")"
   cat > "$file" <<SVG
-<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" role="img" fill="none" stroke="${hue}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${vb}" role="img" fill="none" stroke="${hue}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <title>${title}</title>
 <style>
 path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-out 1 both; }
@@ -116,26 +117,20 @@ ${paths}
 SVG
 }
 
-# ticket_icon <name> <tabler-name> <hue> <title>
-# icon() on an 18x26 canvas: the glyph fills the bottom 18 px, 8 px of transparent pad above it.
-# Alfred floats it wrap-left beside a Jira h3; measured in Jira's renderer, the pad centres the
-# glyph on the heading text and the 26 px float still clears the next block.
+# icon <file> <tabler-name> <hue> <title>
+icon() {
+  icon_svg "icons/$1.svg" "$2" "$3" "$4" 18 18 "0 0 24 24"
+}
+
+# ticket_icon <name> <tabler-name> <hue> <title> <pad>
+# The 18 px glyph under <pad> px of transparent top pad (0.75 px per viewBox unit), floated
+# wrap-left by Alfred. Pads measured in Jira's renderer:
+#   8 (18x26) beside an h3: centres the glyph on the heading text; the float still clears the next block.
+#   4 (18x22) beside a paragraph (12 px top margin, 24 px line): 8 there renders the glyph about 5 px low.
 ticket_icon() {
-  local file="ticket/icons/$1.svg" hue="$3" title="$4"
-  local paths
-  paths=$(tabler_paths "$2")
-  mkdir -p ticket/icons
-  cat > "$file" <<SVG
-<svg xmlns="http://www.w3.org/2000/svg" width="18" height="26" viewBox="0 -10.6667 24 34.6667" role="img" fill="none" stroke="${hue}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<title>${title}</title>
-<style>
-path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-out 1 both; }
-@keyframes draw { from { stroke-dashoffset: 1.1; } }
-@media (prefers-reduced-motion: reduce) { path { animation: none; } }
-</style>
-${paths}
-</svg>
-SVG
+  local pad="$5" vb
+  vb=$(awk -v p="$pad" 'BEGIN { u = p * 4 / 3; printf "0 -%.4f 24 %.4f", u, 24 + u }')
+  icon_svg "ticket/icons/$1.svg" "$2" "$3" "$4" 18 $(( 18 + pad )) "$vb"
 }
 
 CHECK="M30 36 L37 43 L51 29"
@@ -165,7 +160,7 @@ icon bot          robot               "#868e96" "Bot"
 icon blast-radius compass             "#868e96" "Blast radius"
 icon skipped      player-skip-forward "#868e96" "Skipped"
 
-# Alfred's DevOps Assistance Jira tickets: one banner per status, one icon per section heading.
+# Alfred's DevOps Assistance Jira tickets: one banner per status, heading icons, the thread link icon.
 TICKET="Alfred · DevOps Assistance"
 mkdir -p ticket
 banner ticket/banner-new.svg            "#78dce8" "NEW"            "waiting for DevOps to pick it up" "M40 29 L40 43 M33 36 L47 36" "New"            "Cyan banner: this DevOps Assistance ticket is new."                         "$TICKET"
@@ -174,12 +169,11 @@ banner ticket/banner-owner-approval.svg "#ab9df2" "OWNER APPROVAL" "waiting for 
 banner ticket/banner-done.svg           "#a9dc76" "DONE"           "request completed"                "$CHECK"                      "Done"           "Green banner: this DevOps Assistance ticket is done."                        "$TICKET"
 banner ticket/banner-out-of-scope.svg   "#939293" "OUT OF SCOPE"   "closed, not a DevOps request"     "M33 36 L47 36"               "Out of scope"   "Grey banner: this DevOps Assistance ticket is out of scope."                 "$TICKET"
 
-ticket_icon request    notes       "#868e96" "Request"
-ticket_icon vault      books       "#868e96" "Vault triage"
-ticket_icon read       search      "#868e96" "Alfred's read"
-ticket_icon discussion messages    "#868e96" "Discussion"
-ticket_icon steps      tools       "#868e96" "Suggested steps"
-ticket_icon question   help-circle "#2a96ab" "Open questions"
-ticket_icon link       link        "#868e96" "Slack thread"
+ticket_icon vault      books       "#868e96" "Vault triage"    8
+ticket_icon read       search      "#868e96" "Alfred's read"   8
+ticket_icon discussion messages    "#868e96" "Discussion"      8
+ticket_icon steps      tools       "#868e96" "Suggested steps" 8
+ticket_icon question   help-circle "#2a96ab" "Open questions"  8
+ticket_icon link       link        "#868e96" "Slack thread"    4
 
 echo "generated $(ls *.svg icons/*.svg ticket/*.svg ticket/icons/*.svg | wc -l | tr -d ' ') files"

@@ -34,7 +34,7 @@ Outline icons from [Tabler Icons](https://tabler.io/icons) v3.49.0, MIT licence,
 
 ## Ticket assets
 
-Alfred, the DevOps Slack and Jira bot, embeds `ticket/` in the description of each DevOps Assistance ticket: the status banner on top, an icon beside each section heading. Each image's alt text is the emoji it replaces, so email and text-only readers keep the token. Banners carry `Alfred · DevOps Assistance` in the corner.
+Alfred, the DevOps Slack and Jira bot, embeds `ticket/` in the description of each DevOps Assistance ticket: the status banner on top, an icon beside each section heading and the Slack thread link. A banner's alt text is its Jira status name and an icon's is the emoji it replaces, so email and text-only readers keep the meaning. Banners carry `Alfred · DevOps Assistance` in the corner.
 
 | File | Jira status | Label | Hue |
 |---|---|---|---|
@@ -44,19 +44,23 @@ Alfred, the DevOps Slack and Jira bot, embeds `ticket/` in the description of ea
 | `ticket/banner-done.svg` | Done | DONE | `#a9dc76` |
 | `ticket/banner-out-of-scope.svg` | Out of Scope | OUT OF SCOPE | `#939293` |
 
-| Alt | File | Tabler icon | Stroke | Heading |
-|---|---|---|---|---|
-| 📝 | `ticket/icons/request.svg` | `notes` | `#868e96` | Request |
-| 📚 | `ticket/icons/vault.svg` | `books` | `#868e96` | Vault triage |
-| 🔍 | `ticket/icons/read.svg` | `search` | `#868e96` | Alfred's read |
-| 💬 | `ticket/icons/discussion.svg` | `messages` | `#868e96` | Discussion |
-| 🛠️ | `ticket/icons/steps.svg` | `tools` | `#868e96` | Suggested steps |
-| ❓ | `ticket/icons/question.svg` | `help-circle` | `#2a96ab` | Open questions |
-| 🔗 | `ticket/icons/link.svg` | `link` | `#868e96` | Slack thread |
+| Alt | File | Tabler icon | Stroke | Beside | Top pad |
+|---|---|---|---|---|---|
+| 📚 | `ticket/icons/vault.svg` | `books` | `#868e96` | Vault triage heading | 8 px |
+| 🔍 | `ticket/icons/read.svg` | `search` | `#868e96` | Alfred's read heading | 8 px |
+| 💬 | `ticket/icons/discussion.svg` | `messages` | `#868e96` | Discussion heading | 8 px |
+| 🛠️ | `ticket/icons/steps.svg` | `tools` | `#868e96` | Suggested steps heading | 8 px |
+| ❓ | `ticket/icons/question.svg` | `help-circle` | `#2a96ab` | Open questions heading | 8 px |
+| 🔗 | `ticket/icons/link.svg` | `link` | `#868e96` | Slack thread paragraph | 4 px |
 
-Ticket icons are 18x26, not 18x18: the same glyph fills the bottom 18 px under 8 px of transparent pad (`viewBox="0 -10.6667 24 34.6667"`). Alfred floats each one `wrap-left` beside an h3; measured in Jira's renderer, the pad centres the glyph on the heading text and the 26 px float still clears the next block.
+Alfred floats each icon `wrap-left`, so the 18 px glyph sits at the bottom of a taller canvas under transparent top pad. Pads measured in Jira's renderer:
 
-Alfred pins these by commit SHA in `TICKET_ASSETS_REF` (`backend/src/lib/jira/visuals.js`): `https://raw.githubusercontent.com/Stampli/pr-review-assets/<sha>/ticket/<file>`.
+- 8 px, 18x26, `viewBox="0 -10.6667 24 34.6667"`: beside an h3, centres the glyph on the heading text; the float still clears the next block.
+- 4 px, 18x22, `viewBox="0 -5.3333 24 29.3333"`: beside a paragraph (12 px top margin, 24 px line); 8 px there renders the glyph about 5 px low.
+
+The Request heading has no icon: it is the description's first node, its h3 top margin collapses through the parent, and the float lands 21 px low.
+
+Alfred pins these by commit SHA in `TICKET_ASSETS_REF` (`backend/src/lib/jira/visuals.js`): `https://raw.githubusercontent.com/Stampli/pr-review-assets/<sha>/<file>`, with `<file>` a path from the tables above.
 
 ## Editing
 
