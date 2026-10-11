@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="22" viewBox="0 -5.3333 24 29.3333" role="img" fill="none" stroke="#868e96" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<title>Slack thread</title>
+<style>
+path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-out 1 both; }
+@keyframes draw { from { stroke-dashoffset: 1.1; } }
+@media (prefers-reduced-motion: reduce) { path { animation: none; } }
+</style>
+<path d="M9 15l6 -6" pathLength="1" style="animation-delay:0s"/>
+<path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464" pathLength="1" style="animation-delay:0.08s"/>
+<path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" pathLength="1" style="animation-delay:0.16s"/>
+</svg>

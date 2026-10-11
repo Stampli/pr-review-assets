@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="26" viewBox="0 -10.6667 24 34.6667" role="img" fill="none" stroke="#868e96" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<title>Alfred's read</title>
+<style>
+path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-out 1 both; }
+@keyframes draw { from { stroke-dashoffset: 1.1; } }
+@media (prefers-reduced-motion: reduce) { path { animation: none; } }
+</style>
+<path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" pathLength="1" style="animation-delay:0s"/>
+<path d="M21 21l-6 -6" pathLength="1" style="animation-delay:0.08s"/>
+</svg>

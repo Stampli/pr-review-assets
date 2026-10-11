@@ -2,7 +2,8 @@
 # Generates every SVG in this repo. Edit this file, run it, commit the output.
 # Banners are 880x72, badges 20 px tall. One dark panel serves both GitHub themes.
 # Icons are 18 px Tabler outlines (vendor/, fetched by vendor/fetch.sh) on a transparent ground,
-# so their hues hold 3:1 on both GitHub grounds, #ffffff and #0d1117; check.sh enforces it.
+# so their hues hold 3:1 on both GitHub grounds, #ffffff and #0d1117, and on Jira's dark surface
+# #1d2125; check.sh enforces it. ticket/ holds the same kinds of asset for Alfred's Jira tickets.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -12,10 +13,10 @@ FRAME="#282d35"
 MUTED="#8b949e"
 TABLER="vendor/tabler-$(tr -d '[:space:]' < vendor/VERSION)"
 
-# banner <file> <hue> <label> <sub> <glyph-path> <title> <desc>
+# banner <file> <hue> <label> <sub> <glyph-path> <title> <desc> [corner]
 # Final frame is the base style; keyframes animate FROM the start state, once.
 banner() {
-  local file="$1" hue="$2" label="$3" sub="$4" glyph="$5" title="$6" desc="$7"
+  local file="$1" hue="$2" label="$3" sub="$4" glyph="$5" title="$6" desc="$7" corner="${8:-DevOps PR review}"
   cat > "$file" <<SVG
 <svg xmlns="http://www.w3.org/2000/svg" width="880" height="72" viewBox="0 0 880 72" role="img" aria-label="${title}" font-family="${FONT}">
 <title>${title}</title>
@@ -48,7 +49,7 @@ banner() {
 <path class="glyph" d="${glyph}" fill="none" stroke="${hue}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
 <text class="label" x="76" y="33" fill="${hue}" font-size="18" font-weight="700" letter-spacing="2">${label}</text>
 <text class="sub" x="76" y="55" fill="${MUTED}" font-size="12">${sub}</text>
-<text x="862" y="43" fill="${MUTED}" font-size="11" text-anchor="end" opacity="0.7">DevOps PR review</text>
+<text x="862" y="43" fill="${MUTED}" font-size="11" text-anchor="end" opacity="0.7">${corner}</text>
 </svg>
 SVG
 }
@@ -76,27 +77,35 @@ badge() {
 SVG
 }
 
-# icon <file> <tabler-name> <hue> <title>
+# tabler_paths <tabler-name>: prints the <path> lines both icon writers draw.
 # Keeps every Tabler <path d> except the invisible box path. pathLength="1" makes every path
 # length 1, so one overshot dash (1 on, 1.2 off, from offset 1.1) hides it with no round-cap dot.
 # Paths start 0.08 s apart; the delay caps at 0.68 s so the last 0.5 s draw ends before 1.2 s.
-# Fails on any non-path shape in the source, which would otherwise vanish silently.
-icon() {
-  local file="icons/$1.svg" src="${TABLER}/$2.svg" hue="$3" title="$4"
+# Fails on any non-path shape in the source, which would otherwise vanish silently; callers
+# assign its output on a line of its own so set -e stops the run.
+tabler_paths() {
+  local src="${TABLER}/$1.svg"
   local shapes='<(circle|ellipse|line|polygon|polyline|rect)[[:space:]/>]'
-  local paths
   if grep -Eq "$shapes" "$src"; then
     echo "icon: $src contains $(grep -Eo "$shapes" "$src" | sed -E 's#[[:space:]/>]$#>#' | sort -u | tr '\n' ' ')- gen.sh copies only <path>" >&2
     exit 1
   fi
-  paths=$(grep -o '<path [^>]*d="[^"]*"' "$src" \
+  grep -o '<path [^>]*d="[^"]*"' "$src" \
     | sed 's/.* d="\([^"]*\)"$/\1/' \
     | grep -vx 'M0 0h24v24H0z' \
     | awk '{ t = (NR - 1) * 0.08; if (t > 0.68) t = 0.68
-             printf "<path d=\"%s\" pathLength=\"1\" style=\"animation-delay:%gs\"/>\n", $0, t }')
-  mkdir -p icons
+             printf "<path d=\"%s\" pathLength=\"1\" style=\"animation-delay:%gs\"/>\n", $0, t }'
+}
+
+# icon_svg <file> <tabler-name> <hue> <title> <width> <height> <viewBox>
+# The one icon writer: every icon shares this markup, style and draw-in, so they cannot drift.
+icon_svg() {
+  local file="$1" hue="$3" title="$4" w="$5" h="$6" vb="$7"
+  local paths
+  paths=$(tabler_paths "$2")
+  mkdir -p "$(dirname "$file")"
   cat > "$file" <<SVG
-<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" role="img" fill="none" stroke="${hue}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${vb}" role="img" fill="none" stroke="${hue}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <title>${title}</title>
 <style>
 path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-out 1 both; }
@@ -106,6 +115,22 @@ path { stroke-dasharray: 1 1.2; stroke-dashoffset: 0; animation: draw 0.5s ease-
 ${paths}
 </svg>
 SVG
+}
+
+# icon <file> <tabler-name> <hue> <title>
+icon() {
+  icon_svg "icons/$1.svg" "$2" "$3" "$4" 18 18 "0 0 24 24"
+}
+
+# ticket_icon <name> <tabler-name> <hue> <title> <pad>
+# The 18 px glyph under <pad> px of transparent top pad (0.75 px per viewBox unit), floated
+# wrap-left by Alfred. Pads measured in Jira's renderer:
+#   8 (18x26) beside an h3: centres the glyph on the heading text; the float still clears the next block.
+#   4 (18x22) beside a paragraph (12 px top margin, 24 px line): 8 there renders the glyph about 5 px low.
+ticket_icon() {
+  local pad="$5" vb
+  vb=$(awk -v p="$pad" 'BEGIN { u = p * 4 / 3; printf "0 -%.4f 24 %.4f", u, 24 + u }')
+  icon_svg "ticket/icons/$1.svg" "$2" "$3" "$4" 18 $(( 18 + pad )) "$vb"
 }
 
 CHECK="M30 36 L37 43 L51 29"
@@ -135,4 +160,20 @@ icon bot          robot               "#868e96" "Bot"
 icon blast-radius compass             "#868e96" "Blast radius"
 icon skipped      player-skip-forward "#868e96" "Skipped"
 
-echo "generated $(ls *.svg icons/*.svg | wc -l | tr -d ' ') files"
+# Alfred's DevOps Assistance Jira tickets: one banner per status, heading icons, the thread link icon.
+TICKET="Alfred · DevOps Assistance"
+mkdir -p ticket
+banner ticket/banner-new.svg            "#78dce8" "NEW"            "waiting for DevOps to pick it up" "M40 29 L40 43 M33 36 L47 36" "New"            "Cyan banner: this DevOps Assistance ticket is new."                         "$TICKET"
+banner ticket/banner-in-progress.svg    "#ffd866" "IN PROGRESS"    "DevOps is working on it"          "M40 28 L40 36 L46 40"        "In progress"    "Yellow banner: this DevOps Assistance ticket is in progress."               "$TICKET"
+banner ticket/banner-owner-approval.svg "#ab9df2" "OWNER APPROVAL" "waiting for an approver"          "M36 30 L36 42 M44 30 L44 42" "Owner approval" "Purple banner: this DevOps Assistance ticket is waiting for owner approval." "$TICKET"
+banner ticket/banner-done.svg           "#a9dc76" "DONE"           "request completed"                "$CHECK"                      "Done"           "Green banner: this DevOps Assistance ticket is done."                        "$TICKET"
+banner ticket/banner-out-of-scope.svg   "#939293" "OUT OF SCOPE"   "closed, not a DevOps request"     "M33 36 L47 36"               "Out of scope"   "Grey banner: this DevOps Assistance ticket is out of scope."                 "$TICKET"
+
+ticket_icon vault      books       "#868e96" "Vault triage"    8
+ticket_icon read       search      "#868e96" "Alfred's read"   8
+ticket_icon discussion messages    "#868e96" "Discussion"      8
+ticket_icon steps      tools       "#868e96" "Suggested steps" 8
+ticket_icon question   help-circle "#2a96ab" "Open questions"  8
+ticket_icon link       link        "#868e96" "Slack thread"    4
+
+echo "generated $(ls *.svg icons/*.svg ticket/*.svg ticket/icons/*.svg | wc -l | tr -d ' ') files"

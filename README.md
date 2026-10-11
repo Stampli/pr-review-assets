@@ -1,6 +1,6 @@
 # pr-review-assets
 
-Static SVG banners, badges and icons that the Stampli AI PR reviewer embeds in its GitHub reviews. Public so GitHub can display them in private repos; the files carry no data about any pull request.
+Static SVG banners, badges and icons that the Stampli AI PR reviewer embeds in its GitHub reviews, and that Alfred embeds in DevOps Assistance Jira tickets. Public so GitHub and Jira can display them; the files carry no data about any pull request or ticket.
 
 ## Files
 
@@ -11,10 +11,11 @@ Static SVG banners, badges and icons that the Stampli AI PR reviewer embeds in i
 | `banner-reviewer-failure.svg` | banner on the reviewer-failure comment |
 | `badge-blocker.svg` 🔴 · `badge-should-fix.svg` 🟠 · `badge-suggestion.svg` 🟡 · `badge-question.svg` 🔵 · `badge-pre-existing.svg` 🟣 | pill after the severity emoji |
 | `icons/*.svg` | 18 px icon in place of each reviewer emoji token, map below |
+| `ticket/` | Alfred's Jira ticket banners and heading icons, see Ticket assets |
 
 ## Icons
 
-Outline icons from [Tabler Icons](https://tabler.io/icons) v3.49.0, MIT licence, copyright Paweł Kuna; the full notice is in `LICENSE-tabler`. `vendor/VERSION` pins the version for both scripts; `vendor/fetch.sh` fetched the sources into `vendor/tabler-3.49.0/`; `gen.sh` recolours them and adds a one-time draw-in. Icons have no panel behind them, so each stroke holds 3:1 contrast on both GitHub grounds; banners and badges keep their own palette on their dark panel. New version or icon: edit `vendor/VERSION` or `NAMES` in `vendor/fetch.sh`, run `vendor/fetch.sh`, delete the old `vendor/tabler-*` folder, then follow Editing.
+Outline icons from [Tabler Icons](https://tabler.io/icons) v3.49.0, MIT licence, copyright Paweł Kuna; the full notice is in `LICENSE-tabler`. `vendor/VERSION` pins the version for both scripts; `vendor/fetch.sh` fetched the sources into `vendor/tabler-3.49.0/`; `gen.sh` recolours them and adds a one-time draw-in. Icons have no panel behind them, so each stroke holds 3:1 contrast on both GitHub grounds and on Jira's dark surface; banners and badges keep their own palette on their dark panel. New version or icon: edit `vendor/VERSION` or `NAMES` in `vendor/fetch.sh`, run `vendor/fetch.sh`, delete the old `vendor/tabler-*` folder, then follow Editing.
 
 | Token | File | Tabler icon | Stroke |
 |---|---|---|---|
@@ -31,11 +32,41 @@ Outline icons from [Tabler Icons](https://tabler.io/icons) v3.49.0, MIT licence,
 | 🧭 | `icons/blast-radius.svg` | `compass` | `#868e96` |
 | ⏭️ | `icons/skipped.svg` | `player-skip-forward` | `#868e96` |
 
+## Ticket assets
+
+Alfred, the DevOps Slack and Jira bot, embeds `ticket/` in the description of each DevOps Assistance ticket: the status banner on top, an icon beside each section heading and the Slack thread link. A banner's alt text is its Jira status name and an icon's is the emoji it replaces, so email and text-only readers keep the meaning. Banners carry `Alfred · DevOps Assistance` in the corner.
+
+| File | Jira status | Label | Hue |
+|---|---|---|---|
+| `ticket/banner-new.svg` | New | NEW | `#78dce8` |
+| `ticket/banner-in-progress.svg` | In Progress | IN PROGRESS | `#ffd866` |
+| `ticket/banner-owner-approval.svg` | Owner Approval | OWNER APPROVAL | `#ab9df2` |
+| `ticket/banner-done.svg` | Done | DONE | `#a9dc76` |
+| `ticket/banner-out-of-scope.svg` | Out of Scope | OUT OF SCOPE | `#939293` |
+
+| Alt | File | Tabler icon | Stroke | Beside | Top pad |
+|---|---|---|---|---|---|
+| 📚 | `ticket/icons/vault.svg` | `books` | `#868e96` | Vault triage heading | 8 px |
+| 🔍 | `ticket/icons/read.svg` | `search` | `#868e96` | Alfred's read heading | 8 px |
+| 💬 | `ticket/icons/discussion.svg` | `messages` | `#868e96` | Discussion heading | 8 px |
+| 🛠️ | `ticket/icons/steps.svg` | `tools` | `#868e96` | Suggested steps heading | 8 px |
+| ❓ | `ticket/icons/question.svg` | `help-circle` | `#2a96ab` | Open questions heading | 8 px |
+| 🔗 | `ticket/icons/link.svg` | `link` | `#868e96` | Slack thread paragraph | 4 px |
+
+Alfred floats each icon `wrap-left`, so the 18 px glyph sits at the bottom of a taller canvas under transparent top pad. Pads measured in Jira's renderer:
+
+- 8 px, 18x26, `viewBox="0 -10.6667 24 34.6667"`: beside an h3, centres the glyph on the heading text; the float still clears the next block.
+- 4 px, 18x22, `viewBox="0 -5.3333 24 29.3333"`: beside a paragraph (12 px top margin, 24 px line); 8 px there renders the glyph about 5 px low.
+
+The Request heading has no icon: it is the description's first node, its h3 top margin collapses through the parent, and the float lands 21 px low.
+
+Alfred pins these by commit SHA in `TICKET_ASSETS_REF` (`backend/src/lib/jira/visuals.js`): `https://raw.githubusercontent.com/Stampli/pr-review-assets/<sha>/<file>`, with `<file>` a path from the tables above.
+
 ## Editing
 
 1. Edit `gen.sh`. It is the only source; never hand-edit an SVG.
 2. `./gen.sh && ./check.sh`.
-3. Commit and push. Copy the new commit SHA into `REVIEW_ASSETS_REF` in `Stampli/DevOps/.github/workflows/pr_review.yml` and open a PR there.
+3. Commit and push. Copy the new commit SHA into `REVIEW_ASSETS_REF` in `Stampli/DevOps/.github/workflows/pr_review.yml`, or for `ticket/` into `TICKET_ASSETS_REF` in Alfred, and open a PR there.
 
 URLs are pinned by commit SHA: `https://raw.githubusercontent.com/Stampli/pr-review-assets/<sha>/<file>`. Old reviews keep their old look; nothing is cached by branch.
 
@@ -43,4 +74,4 @@ URLs are pinned by commit SHA: `https://raw.githubusercontent.com/Stampli/pr-rev
 
 Well-formed XML, under 20 KB, `role="img"`, `<title>`, `<desc>`, explicit `width`/`height`/`viewBox`, the GitHub monospace font stack, no scripts, no external references, finite animation only, a `prefers-reduced-motion` rule. Base styles are the finished frame so a viewer with motion off, or an email client, sees the final image.
 
-Icons skip the `<desc>` and font-stack rules and add their own: under 2 KB, `pathLength="1"` on every `<path>`, no Tabler `M0 0h24v24H0z` box path, iteration count absent or `1` in the `animation-iteration-count` longhand and in every `animation` shorthand, every `stroke` a `#rrggbb` with WCAG contrast of at least 3.0 against both `#ffffff` and `#0d1117`.
+Icons skip the `<desc>` and font-stack rules and add their own: under 2 KB, `pathLength="1"` on every `<path>`, no Tabler `M0 0h24v24H0z` box path, iteration count absent or `1` in the `animation-iteration-count` longhand and in every `animation` shorthand, every `stroke` a `#rrggbb` with WCAG contrast of at least 3.0 against `#ffffff`, `#0d1117` and `#1d2125` (Jira's dark surface). They apply to `ticket/icons/` too.
